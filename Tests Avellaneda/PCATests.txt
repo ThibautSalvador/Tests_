@@ -1,0 +1,10 @@
+nrmReturns = replicate(10, rnorm(10))	#generate random returns (normal)
+nrmReturnsDF = data.frame(AAA=nrmReturns[,1],AAB=nrmReturns[,2],AAC=nrmReturns[,3],AAD=nrmReturns[,4],AAE=nrmReturns[,5],AAF=nrmReturns[,6],AAG=nrmReturns[,7],AAH=nrmReturns[,8],AAH=nrmReturns[,9],AAI=nrmReturns[,10])
+fit <- princomp(nrmReturnsDF, cor=TRUE)		#PCA
+summary(fit)
+plot(fit,type="lines")
+library(nFactors)
+install.packages("nFactors")
+evDF = eigen(cor(nrmReturnDF))	#gives eigenvects/vales
+apDF = parallel(subject=nrow(nrmReturnsDF),var=ncol(nrmReturnsDF),rep=100,cent=.05)
+plot(nScree(x=evDF$values, aparallel=apDF$eigen$qevpea))	#determinates optimal number of factors
