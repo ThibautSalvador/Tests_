@@ -29,7 +29,7 @@ position <- function(S,Sso,Sbc,Ssc,Sbo){
 	M = length(S)
 	pos[1] = 0
 	bta = 1 		#to be modif
-	for (i in 2:(M+1)) {
+	for (i in 2:(M)) {
 	pos[i] = c(pos[i-1])
 		if (S[i] > Sso){  
 		pos[i] = c(-1) 
@@ -44,4 +44,4 @@ position <- function(S,Sso,Sbc,Ssc,Sbo){
 		}
 		return(pos);
 }
-position(OU500[2,],1,0.5,0.5,1)
+lines(position(OU500[2,],1,0.5,0.5,1),col="blue")		#plots position in stock
