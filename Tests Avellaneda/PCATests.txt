@@ -7,4 +7,41 @@ library(nFactors)
 install.packages("nFactors")
 evDF = eigen(cor(nrmReturnDF))	#gives eigenvects/vales
 apDF = parallel(subject=nrow(nrmReturnsDF),var=ncol(nrmReturnsDF),rep=100,cent=.05)
-plot(nScree(x=evDF$values, aparallel=apDF$eigen$qevpea))	#determinates optimal number of factors
+plot(nScree(x=evDF$values, aparallel=apDF$eigen$qevpea))	#determinates optimal number of factors (number of eigenvalues above parrallel analysis curve)
+plot(sort(evDF$vectors[,1], decreasing=TRUE))
+OU <- function(T,M,mi,ki,sigma,x0){
+  dw  <- rnorm(M, 0, sqrt(T/M))
+  dt  <- T/M
+  eqVar = sigma*sqrt(0.5*(1/ki))
+  X = c(x0)
+  S = (x0-mi)/eqVar
+  for (i in 2:(M+1)) {
+    X[i]  =  X[i-1] + ki*(mi-X[i-1])*dt + sigma*dw[i-1]
+	S[i] = (X[i]-mi)/eqVar
+  }
+  output = matrix(cbind(X,S),nrow=2,ncol=M+1,byrow=TRUE)
+  return(output);
+}		#generates mean reversion process and associated s score
+OU500 =OU(60/252,500,0,8.4,0.4,0)
+plot.default(OU500[1,],ylim=c(min(OU500),max(OU500)),type="l")
+lines(OU500[2,],col="red")		#plots mean reversion process and associated s score (note the impact of vol)
+position <- function(S,Sso,Sbc,Ssc,Sbo){
+	M = length(S)
+	pos[1] = 0
+	bta = 1 		#to be modif
+	for (i in 2:(M+1)) {
+	pos[i] = c(pos[i-1])
+		if (S[i] > Sso){  
+		pos[i] = c(-1) 
+			next
+			}		#first s reaches Sso
+		if (S[i] < -Sbo){	
+		pos[i] = c(1)
+			next
+			}		#first s reaches -Sbo
+		if((pos[i] == -1 )&& (S[i] < Sbc)){ pos[i] = c(0)}		#close short position
+		if((pos[i] == 1) && (S[i] > -Ssc)){ pos[i] = c(0)}	#close long position
+		}
+		return(pos);
+}
+position(OU500[2,],1,0.5,0.5,1)
